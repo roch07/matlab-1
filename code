@@ -1,0 +1,39 @@
+%  Load an image into MATLAB using the “imread” function.
+imagePath = 'Screenshot (1603).png'; % Update with the correct path in your MATLAB Drive
+originalImage = imread(imagePath);
+
+% Preprocessing
+smoothedImage = imgaussfilt(originalImage, 2); 
+
+%  Segmentation
+numClusters = 3;
+segmentedResult = kmeans(double(smoothedImage(:)), numClusters);
+segmentedResult = reshape(segmentedResult, size(smoothedImage));
+
+% Convert segmentedResult to a two-dimensional matrix
+[~, ~, segmentedResult2D] = unique(segmentedResult);
+
+%  bwlabel to create a labeled image
+labeledImage = bwlabel(segmentedResult2D);
+
+%  Visualization
+subplot(1, 2, 1);
+imshow(originalImage);
+title('Original Image');
+
+subplot(1, 2, 2);
+imshow(label2rgb(labeledImage));
+title('Segmented Result');
+
+%  Analysis
+stats = regionprops(labeledImage, 'Area', 'Centroid', 'Perimeter');
+
+% Displaying analysis results
+disp('Region Properties:');
+disp(stats);
+
+% For example, display areas of segmented regions
+disp('Area of Segmented Regions:');
+for i = 1:length(stats)
+    disp(['Region ' num2str(i) ': ' num2str(stats(i).Area)]);
+end
