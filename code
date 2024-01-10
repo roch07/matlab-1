@@ -1,5 +1,5 @@
 %  Load an image into MATLAB using the “imread” function.
-imagePath = 'Screenshot (1603).png'; % Update with the correct path in your MATLAB Drive
+imagePath = 'Screenshot (1603).png';
 originalImage = imread(imagePath);
 
 % Preprocessing
