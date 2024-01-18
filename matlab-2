@@ -1,0 +1,71 @@
+
+    function analogueClock()
+    clc;
+    clear;
+    clf;
+
+   
+    f = figure('Name', 'Analogue Clock', 'NumberTitle', 'off', 'Position', [100, 100, 500, 500]);
+
+    % Clock Face Design
+    th = linspace(0, 2*pi, 1000); % Smoothly draw the circle
+    d = 10; % Diameter
+    x = d * cos(th);
+    y = d * sin(th);
+    plot(x, y, 'LineWidth', 2, 'Color', 'k');
+    hold on;
+
+    d = 8; % Diameter for hour markers
+    for th = pi/6 : pi/6 : 2*pi
+        a = d * sin(th);
+        b = d * cos(th);
+        text(a, b, num2str(mod(ceil(th/(pi/6)), 12)), 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'FontWeight', 'bold');
+    end
+
+    % Event Handling
+    set(f, 'ButtonDownFcn', @setTimeOnClick);
+
+    % Initialize handles for clock hands
+    hHour = plot([0, 0], [0, 0], 'LineWidth', 2, 'Color', 'k');
+    hMinute = plot([0, 0], [0, 0], 'LineWidth', 1.5, 'Color', 'b');
+    hSecond = plot([0, 0], [0, 0], 'LineWidth', 1, 'Color', 'r');
+
+    % Clock Hands
+    while ishandle(f) % Continue updating as long as the figure is open
+        c = clock;
+        hr = mod(c(4), 12);
+        min = c(5);
+        sec = c(6);
+
+        % Update hands
+      updateClockHands(hr, min, sec, hHour, hMinute, hSecond);
+
+        pause(1); % Update every second
+    end
+
+    function updateClockHands(hr, min, sec, hHour, hMinute, hSecond)
+        % Calculate angles
+        theta_hr = (hr*pi/6) + (min*pi/(6*60)); % 30° per hour + additional angle for minutes
+        theta_min = (min*pi/30) + (sec*pi/(30*60)); % 6° per minute + additional angle for seconds
+        theta_sec = (sec*pi/30); % 6° per second
+
+        % Update hands
+        updateHand(theta_hr, 3, hHour);
+        updateHand(theta_min, 5, hMinute);
+        updateHand(theta_sec, 7, hSecond);
+    end
+
+    function updateHand(theta, length, handle)
+        xtemp = length * sin(theta);
+        ytemp = length * cos(theta);
+
+        set(handle, 'XData', [0, xtemp], 'YData', [0, ytemp]);
+
+        drawnow; % Update the plot immediately
+    end
+
+    function setTimeOnClick(~, ~)
+        % Dummy function for setting time on click
+        disp('Clicked on the clock. Add your time-setting logic here.');
+    end
+end
